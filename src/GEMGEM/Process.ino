@@ -42,7 +42,7 @@ void nextstep() {
       if (erasedCount > 0) {
         gb.sound.playOK();
         step = STEP_MOVE;
-        if (gameStarted) gameState.score += erasedCount;
+        if (gameStarted) gameState.score += scoreAdd;
       } else {
         gb.sound.playCancel();
         undoSwitch();
@@ -163,28 +163,40 @@ bool moveDown() {
 
 void eraseGems() {
   erasedCount = 0;
+  scoreAdd = 0;
   showHint = false;
 
   // mark gems to remove
   for (int row = 0; row < BOARDHEIGHT; row++) {
     for (int col = 0; col < BOARDWIDTH; col++) {
-      // horizontal from left to right
-      if (col + 2 < BOARDWIDTH && board[row][col] == board[row][col + 1] && board[row][col] == board[row][col + 2]) {
+      if (
+        // horizontal from left to right
+          (col + 2 < BOARDWIDTH && board[row][col] == board[row][col + 1] && board[row][col] == board[row][col + 2])
+        ||  
+        // vertical from top to bottom
+          (row + 2 < BOARDHEIGHT && board[row][col] == board[row + 1][col] && board[row][col] == board[row + 2][col])
+       ) {
         canErased[row][col] = true;
+        int count = 1;
         int offset = col + 1;
-        while (offset < BOARDWIDTH && board[row][offset] == board[row][col]) {
-          canErased[row][offset] = true;
-          offset++;
+        // horizontal from left to right
+        if ( col + 2 < BOARDWIDTH && board[row][col] == board[row][col + 1] && board[row][col] == board[row][col + 2]){
+          while (offset < BOARDWIDTH && board[row][offset] == board[row][col]) {
+            canErased[row][offset] = true;
+            offset++;
+            count++;
+          }
         }
-      }
-      // vertical from top to bottom
-      if (row + 2 < BOARDHEIGHT && board[row][col] == board[row + 1][col] && board[row][col] == board[row + 2][col]) {
-        canErased[row][col] = true;
-        int offset = row + 1;
-        while (offset < BOARDHEIGHT && board[offset][col] == board[row][col]) {
-          canErased[offset][col] = true;
-          offset++;
+        // vertical from top to bottom
+        if ( (row + 2 < BOARDHEIGHT && board[row][col] == board[row + 1][col] && board[row][col] == board[row + 2][col]) ) {
+          offset = row + 1;
+          while (offset < BOARDHEIGHT && board[offset][col] == board[row][col]) {
+            canErased[offset][col] = true;
+            offset++;
+            count++;
+          }
         }
+        scoreAdd += (10 + (count - 3) * 10); // every 3rd match get 10 points + 10 points for every extra gem
       }
     }
   }

@@ -168,6 +168,7 @@ bool processing;  // if true - this is running processing: remove and move gems
 bool gameStarted;
 char step;
 int erasedCount;
+int scoreAdd;
 
 struct Gamestate {
   char id[sizeof(GAME_ID)];
