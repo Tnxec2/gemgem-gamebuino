@@ -182,18 +182,22 @@ void eraseGems() {
         // horizontal from left to right
         if ( col + 2 < BOARDWIDTH && board[row][col] == board[row][col + 1] && board[row][col] == board[row][col + 2]){
           while (offset < BOARDWIDTH && board[row][offset] == board[row][col]) {
-            canErased[row][offset] = true;
+            if ( ! canErased[row][offset] ) {
+              canErased[row][offset] = true;
+              count++;
+            }
             offset++;
-            count++;
           }
         }
         // vertical from top to bottom
         if ( (row + 2 < BOARDHEIGHT && board[row][col] == board[row + 1][col] && board[row][col] == board[row + 2][col]) ) {
           offset = row + 1;
           while (offset < BOARDHEIGHT && board[offset][col] == board[row][col]) {
-            canErased[offset][col] = true;
+            if ( ! canErased[offset][col] ) {
+              canErased[offset][col] = true;
+              count++;
+            }
             offset++;
-            count++;
           }
         }
         scoreAdd += (10 + (count - 3) * 10); // every 3rd match get 10 points + 10 points for every extra gem
